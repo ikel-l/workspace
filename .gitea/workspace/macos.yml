@@ -1,0 +1,40 @@
+name: Build macOS PKG
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-pkg:
+    runs-on: macos-12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show stage content
+        run: |
+          find stage-macOS -type f
+
+      - name: Build component package
+        run: |
+          mkdir -p build
+
+          pkgbuild \
+            --root stage-macOS/component/payload \
+            --scripts stage-macOS/pkgscripts \
+            --identifier ru.gorizont.vdi \
+            --version 1.8 \
+            build/GorizontVS-VDI-Client-Setup.pkg
+
+      - name: Verify package
+        run: |
+          pkgutil --check-signature build/GorizontVS-VDI-Client-Setup.pkg || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GorizontVS-VDI-pkg
+          path: build/GorizontVS-VDI-Client-Setup.pkg

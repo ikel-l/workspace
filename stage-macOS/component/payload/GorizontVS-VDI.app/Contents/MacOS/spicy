@@ -1,0 +1,39 @@
+#!/bin/bash
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+
+# Если wrapper лежит в Contents/MacOS
+APP_CONTENTS="$(cd "$HERE/.." && pwd)"
+
+RES="$APP_CONTENTS/Resources"
+FW="$APP_CONTENTS/Frameworks"
+
+SPICE="$RES/spice"
+BREW="$RES/brew"
+
+export PATH="$SPICE/bin:$BREW/bin:/usr/bin:/bin"
+
+export DYLD_LIBRARY_PATH="$FW:$SPICE/lib:$BREW/lib"
+
+export GI_TYPELIB_PATH="$SPICE/lib/girepository-1.0:$BREW/lib/girepository-1.0"
+
+export XDG_DATA_DIRS="$SPICE/share:$BREW/share:/usr/share"
+
+export GSETTINGS_SCHEMA_DIR="$SPICE/share/glib-2.0/schemas:$BREW/share/glib-2.0/schemas"
+
+export GIO_MODULE_DIR="$BREW/lib/gio/modules"
+
+export GST_PLUGIN_SYSTEM_PATH=""
+export GST_PLUGIN_PATH="$BREW/lib/gstreamer-1.0"
+export GST_PLUGIN_SCANNER="$BREW/libexec/gstreamer-1.0/gst-plugin-scanner"
+export GST_REGISTRY="${HOME}/Library/Caches/gorizontvs-spicy-gst-registry.bin"
+
+export GDK_PIXBUF_MODULEDIR="$BREW/lib/gdk-pixbuf-2.0/2.10.0/loaders"
+export GDK_PIXBUF_MODULE_FILE="$BREW/lib/gdk-pixbuf-2.0/loaders.cache"
+
+export LC_ALL="${LC_ALL:-ru_RU.UTF-8}"
+export LANG="${LANG:-ru_RU.UTF-8}"
+export LANGUAGE="${LANGUAGE:-ru}"
+
+exec "$SPICE/bin/spicy" "$@"
