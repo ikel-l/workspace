@@ -46,7 +46,7 @@ jobs:
         run: |
           source venv/bin/activate
           ./rebuild.sh
-          pip install nuitka ordered-set zstandard imageio
+          pip install  krb5 nuitka ordered-set zstandard imageio
           mkdir dist
           pyside6-deploy -c pysidedeploy.mac.spec
 
