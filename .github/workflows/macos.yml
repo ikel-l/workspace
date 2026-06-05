@@ -39,6 +39,7 @@ jobs:
           cp makefiles/spicy.c spice-full/spice-gtk/tools/
           cd spice-full
           export PKG_CONFIG_PATH="/opt/homebrew/opt/cyrus-sasl/lib/pkgconfig:$PKG_CONFIG_PATH"
+          mkdir -p build/spice/usr/share/locale/ru/LC_MESSAGES
           make 
 
       - name: build-client
