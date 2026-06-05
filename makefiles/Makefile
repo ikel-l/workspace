@@ -87,7 +87,9 @@ install:
 	@echo "✅ Всё собрано и установлено в: $(DESTDIR)"
 
 check:
-	chmod u+s /opt/build/spice/usr/libexec/spice-client-glib-usb-acl-helper
+	echo "YEEEEEEEEEEEEEEEEEEEEEES"
+
+	#chmod u+s /opt/build/spice/usr/libexec/spice-client-glib-usb-acl-helper
 
 clean:
 	rm -rf */$(BUILD_DIR)
