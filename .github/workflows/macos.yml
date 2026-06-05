@@ -46,6 +46,7 @@ jobs:
         run: |
           source venv/bin/activate
           ./rebuild.sh
+          pip install nuitka ordered-set zstandard imageio
           pyside6-deploy -c pysidedeploy.windows.spec
 
 
