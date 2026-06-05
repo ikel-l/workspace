@@ -1,4 +1,4 @@
-PREFIX ?= /usr
+PREFIX ?= /opt/homebrew
 DESTDIR ?= /opt/build/spice
 BUILD_DIR ?= build
 
