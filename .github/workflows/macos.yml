@@ -25,6 +25,8 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           pip install pyparsing
+          pkg-config --modversion libsasl2
+          pkg-config --libs libsasl2
 
       
       - name: spicy-build
