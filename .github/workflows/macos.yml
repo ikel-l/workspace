@@ -47,7 +47,8 @@ jobs:
           source venv/bin/activate
           ./rebuild.sh
           pip install nuitka ordered-set zstandard imageio
-          pyside6-deploy -c pysidedeploy.windows.spec
+          mkdir dist
+          pyside6-deploy -c pysidedeploy.macos.spec
 
       - name: update stage
         run: |
@@ -55,9 +56,8 @@ jobs:
           pwd
           ls -la
           echo "check dist-win"
-          ls -lh dist-win/GorizontVS-VDI.app
-          file dist-win/GorizontVS-VDI.app
-          ls -lh spice-full/build/spice/opt
+          ls -lh dist/GorizontVS-VDI.app/
+          ls -lh spice-full/build/
           cp -vr spice-full/build/spice/opt/homebrew/* stage-macOS/component/payload/GorizontVS-VDI.app/Contents/Resources/spice/
 
 
