@@ -51,12 +51,14 @@ jobs:
 
       - name: update stage
         run: |
+          ls -la
           cp -vr build/spice/opt/homebrew/* stage-macOS/component/payload/GorizontVS-VDI.app/Contents/Resources/spice/
 
 
       - name: Show stage content
         run: |
           find stage-macOS -type f
+          ls -la
 
       - name: Build component package
         run: |
