@@ -29,6 +29,7 @@ jobs:
       
       - name: spicy-build
         run: |
+          source venv/bin/activate
           unzip spice-full.zip
           cp makefiles/Makefile spice-full
           cp makefiles/meson.build-gtk-tools spice-full/spice-gtk/tools/meson.build 
