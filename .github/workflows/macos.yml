@@ -53,8 +53,9 @@ jobs:
         run: |
           echo "check PWD"
           pwd
+          ls -la
           echo "check dist-win"
-          ls -la workspace/dist-win/GorizontVS-VDI.app/*/*
+          ls -la dist-win/
           cp -vr spice-full/build/spice/opt/homebrew/* stage-macOS/component/payload/GorizontVS-VDI.app/Contents/Resources/spice/
 
 
