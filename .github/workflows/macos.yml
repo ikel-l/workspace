@@ -17,7 +17,7 @@ jobs:
       - name: check and install
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          brew install meson ninja
+          brew install gstreamer gst-plugins-base glib pixman meson ninja opus jpeg-turbo openssl libusb  gettext
           meson --version
           ninja --version
           python3 --version
