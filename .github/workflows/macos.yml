@@ -17,7 +17,7 @@ jobs:
       - name: check and install
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          brew install python@3.13 gstreamer gst-plugins-base glib pixman meson ninja phodav opus jpeg-turbo openssl libusb gettext cyrus-sasl
+          brew install krb5 python@3.13 gstreamer gst-plugins-base glib pixman meson ninja phodav opus jpeg-turbo openssl libusb gettext cyrus-sasl
           meson --version
           ninja --version
           python3.13 --version
