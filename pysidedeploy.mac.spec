@@ -1,5 +1,5 @@
 [app]
-title = Gorizont-VS VDI Client
+title = GorizontVS-VDI
 project_dir = .
 input_file = GorizontVS-VDI.py
 project_file = pyproject.toml
