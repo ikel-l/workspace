@@ -13,6 +13,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
+      - name: spicy-build
+        run: |
+        unzip spice-full.zip
+        cp makefiles/Makefile spice-full
+        cp makefiles/meson.build-gtk-tools spice-full/spice-gtk/tools/meson.build 
+        cp makefiles/spicy.c spice-full/spice-gtk/tools/
+        cd spice-full
+        make 
+
+      - name: build-client
+        run: |
+          python3 -m venv venv 
+          source venv/bin/activate
+          pip install -r requirements.txt
+          ./rebuild.sh
+          pyside6-deploy -c pysidedeploy.windows.spec
+
 
       - name: Show stage content
         run: |
