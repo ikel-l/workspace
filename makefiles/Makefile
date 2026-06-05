@@ -39,7 +39,7 @@ spice-gtk:
 	msgfmt ru.po -o spice-gtk.mo && \
 	cd .. && \
 	cp po/spice-gtk.mo build/po/ru/LC_MESSAGES/ && \
-	cp po/spice-gtk.mo /opt/build/build/usr/share/locale/ru/LC_MESSAGES/ && \
+	cp po/spice-gtk.mo ../build/spice/usr/share/locale/ru/LC_MESSAGES/ && \
 	DESTDIR=$(DESTDIR) ninja -C $(BUILD_DIR) install
 
 
