@@ -1,5 +1,5 @@
 PREFIX ?= /opt/homebrew
-DESTDIR ?= /opt/build/spice
+DESTDIR ?= ../build/spice
 BUILD_DIR ?= build
 
 .PHONY: all alt usbredir spice-protocol spice spice-gtk install clean
