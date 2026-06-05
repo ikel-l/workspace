@@ -13,21 +13,18 @@ usbredir:
         meson setup $(BUILD_DIR) --prefix=$(PREFIX) && \
         ninja -C $(BUILD_DIR) && \
         ninja -C $(BUILD_DIR) install && \
-        DESTDIR=$(DESTDIR) ninja -C $(BUILD_DIR) install 
 
 spice-protocol:
 	cd spice-protocol && \
         rm -rf $(BUILD_DIR) && \
         meson setup $(BUILD_DIR) --prefix=$(PREFIX) && \
         ninja -C $(BUILD_DIR) && \
-        ninja -C $(BUILD_DIR) install
 
 spice:
 	cd spice && \
         rm -rf $(BUILD_DIR) && \
         CXXFLAGS="-D_LIBCPP_HARDENING_MODE=none" meson setup $(BUILD_DIR) --prefix=$(PREFIX)  -Dcpp_std=gnu++17  -Dtests=false && \
         ninja -C $(BUILD_DIR) && \
-        ninja -C $(BUILD_DIR) install
 
 spice-gtk:
 	cd spice-gtk && \
