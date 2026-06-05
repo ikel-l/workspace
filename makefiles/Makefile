@@ -25,7 +25,7 @@ spice-protocol:
 spice:
 	cd spice && \
         rm -rf $(BUILD_DIR) && \
-        meson setup $(BUILD_DIR) --prefix=$(PREFIX)  -Dcpp_args="-std=c++17" -Dtests=false && \
+        CXXFLAGS="-D_LIBCPP_HARDENING_MODE=none" meson setup $(BUILD_DIR) --prefix=$(PREFIX)  -Dcpp_std=c++17  -Dtests=false && \
         ninja -C $(BUILD_DIR) && \
         ninja -C $(BUILD_DIR) install
 
