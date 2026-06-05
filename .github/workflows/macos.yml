@@ -21,6 +21,11 @@ jobs:
           meson --version
           ninja --version
           python3 --version
+          /opt/homebrew/bin/python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          pip install pyparsing
+
       
       - name: spicy-build
         run: |
@@ -33,9 +38,6 @@ jobs:
 
       - name: build-client
         run: |
-          python3 -m venv venv 
-          source venv/bin/activate
-          pip install -r requirements.txt
           ./rebuild.sh
           pyside6-deploy -c pysidedeploy.windows.spec
 
