@@ -25,7 +25,7 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           pip install pyparsing
-          find /opt/homebrew -name "libsasl2.pc"
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/cyrus-sasl/lib/pkgconfig:$PKG_CONFIG_PATH"
           pkg-config --modversion libsasl2
           pkg-config --libs libsasl2
 
@@ -38,6 +38,7 @@ jobs:
           cp makefiles/meson.build-gtk-tools spice-full/spice-gtk/tools/meson.build 
           cp makefiles/spicy.c spice-full/spice-gtk/tools/
           cd spice-full
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/cyrus-sasl/lib/pkgconfig:$PKG_CONFIG_PATH"
           make 
 
       - name: build-client
