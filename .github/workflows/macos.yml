@@ -44,6 +44,7 @@ jobs:
 
       - name: build-client
         run: |
+          source venv/bin/activate
           ./rebuild.sh
           pyside6-deploy -c pysidedeploy.windows.spec
 
