@@ -55,7 +55,9 @@ jobs:
           pwd
           ls -la
           echo "check dist-win"
-          ls -la dist-win/
+          ls -lh dist-win/GorizontVS-VDI.app
+          file dist-win/GorizontVS-VDI.app
+          ls -lh spice-full/build/spice/opt
           cp -vr spice-full/build/spice/opt/homebrew/* stage-macOS/component/payload/GorizontVS-VDI.app/Contents/Resources/spice/
 
 
