@@ -17,11 +17,11 @@ jobs:
       - name: check and install
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          brew install gstreamer gst-plugins-base glib pixman meson ninja phodav opus jpeg-turbo openssl libusb gettext cyrus-sasl
+          brew install python@3.13 gstreamer gst-plugins-base glib pixman meson ninja phodav opus jpeg-turbo openssl libusb gettext cyrus-sasl
           meson --version
           ninja --version
-          python3 --version
-          /opt/homebrew/bin/python3 -m venv venv
+          python3.13 --version
+          /opt/homebrew/bin/python3.13 -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
           pip install pyparsing
