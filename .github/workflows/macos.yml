@@ -51,7 +51,11 @@ jobs:
 
       - name: update stage
         run: |
-          ls -la build/*/*
+          echo "check spice full"
+          ls -la spice-full/
+          echo "check spice-build"
+          ls -la spice-full/build
+          echo "check dist-win"
           ls -la dist-win/GorizontVS-VDI.app/*/*
           cp -vr build/spice/opt/homebrew/* stage-macOS/component/payload/GorizontVS-VDI.app/Contents/Resources/spice/
 
