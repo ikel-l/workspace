@@ -1,0 +1,9 @@
+PySide6==6.11.0
+PySide6_Essentials
+PySide6-Addons
+shiboken6
+cryptography
+pyspnego
+gssapi; sys_platform != 'win32'
+sspilib; sys_platform == 'win32'
+pywin32; sys_platform == 'win32'

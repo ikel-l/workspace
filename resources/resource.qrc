@@ -1,0 +1,137 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/img">
+        <file>static/login-bg.svg</file>
+        <file>static/login-bg-white.svg</file>
+        <file>static/login-bg-dark.svg</file>
+        <file>static/illustration.svg</file>
+        <file>static/main-bg-white.svg</file>
+        <file>static/main-bg-dark.svg</file>
+        <file>static/app.png</file>
+        <file>static/app.ico</file>
+        <file>static/os/almalinux.svg</file>
+        <file>static/os/alt_linux.svg</file>
+        <file>static/os/astra_linux.svg</file>
+        <file>static/os/centos.svg</file>
+        <file>static/os/debian.svg</file>
+        <file>static/os/fedora.svg</file>
+        <file>static/os/linux.svg</file>
+        <file>static/os/opensuse.svg</file>
+        <file>static/os/redos.svg</file>
+        <file>static/os/rocky_linux.svg</file>
+        <file>static/os/rosa_linux.svg</file>
+        <file>static/os/ubuntu.svg</file>
+        <file>static/os/windows.svg</file>
+        <file>static/os/windows_10.svg</file>
+        <file>static/os/windows_11.svg</file>
+        <file>static/os/windows_server_2016.svg</file>
+        <file>static/os/windows_server_2019.svg</file>
+        <file>static/os/windows_server_2022.svg</file>
+        <file>static/os/windows_server_2025.svg</file>
+        <file>static/app.icns</file>
+        <file>static/logo.svg</file>
+        <file>static/logo-small.svg</file>
+        <file>static/gorizontvs-logo.svg</file>
+        <file>static/eye_off.svg</file>
+        <file>static/eye_open.svg</file>
+        <file>static/globe.svg</file>
+        <file>static/lock.svg</file>
+        <file>static/user.svg</file>
+        <file>static/search.svg</file>
+        <file>static/nav-home.svg</file>
+        <file>static/nav-apps.svg</file>
+        <file>static/nav-desktops.svg</file>
+        <file>static/power_on.svg</file>
+        <file>static/power_off.svg</file>
+        <file>static/refresh.svg</file>
+        <file>static/moon.svg</file>
+        <file>static/sun.svg</file>
+        <file>static/transport.svg</file>
+        <file>static/actions.svg</file>
+        <file>static/chevron-up.svg</file>
+        <file>static/chevron-down.svg</file>
+        <file>static/check.svg</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>fonts/Montserrat-Black.ttf</file>
+        <file>fonts/Montserrat-Bold.ttf</file>
+        <file>fonts/Montserrat-Light.ttf</file>
+        <file>fonts/Montserrat-Medium.ttf</file>
+        <file>fonts/Montserrat-Regular.ttf</file>
+        <file>fonts/Montserrat-SemiBold.ttf</file>
+    </qresource>
+    <qresource prefix="/qml">
+        <file alias="Main.qml">../src/qmlui/qml/Main.qml</file>
+        <file alias="Components/ArtBadge.qml">../src/qmlui/qml/Components/ArtBadge.qml</file>
+        <file alias="Components/Artwork.qml">../src/qmlui/qml/Components/Artwork.qml</file>
+        <file alias="Components/ConnectButton.qml">../src/qmlui/qml/Components/ConnectButton.qml</file>
+        <file alias="Components/EmptyState.qml">../src/qmlui/qml/Components/EmptyState.qml</file>
+        <file alias="Components/FavoriteButton.qml">../src/qmlui/qml/Components/FavoriteButton.qml</file>
+        <file alias="Components/MenuRow.qml">../src/qmlui/qml/Components/MenuRow.qml</file>
+        <file alias="Components/GorizontVSTransportSettings.qml">../src/qmlui/qml/Components/GorizontVSTransportSettings.qml</file>
+        <file alias="Components/MoreButton.qml">../src/qmlui/qml/Components/MoreButton.qml</file>
+        <file alias="Components/ProfileTile.qml">../src/qmlui/qml/Components/ProfileTile.qml</file>
+        <file alias="Components/ServiceCard.qml">../src/qmlui/qml/Components/ServiceCard.qml</file>
+        <file alias="Components/ServiceGrid.qml">../src/qmlui/qml/Components/ServiceGrid.qml</file>
+        <file alias="Components/ServiceImage.qml">../src/qmlui/qml/Components/ServiceImage.qml</file>
+        <file alias="Components/ServiceMenu.qml">../src/qmlui/qml/Components/ServiceMenu.qml</file>
+        <file alias="Components/ServiceRow.qml">../src/qmlui/qml/Components/ServiceRow.qml</file>
+        <file alias="Components/ServiceTile.qml">../src/qmlui/qml/Components/ServiceTile.qml</file>
+        <file alias="Components/SpiceTransportSettings.qml">../src/qmlui/qml/Components/SpiceTransportSettings.qml</file>
+        <file alias="Components/ViewToggle.qml">../src/qmlui/qml/Components/ViewToggle.qml</file>
+        <file alias="Dialogs/AppDialog.qml">../src/qmlui/qml/Dialogs/AppDialog.qml</file>
+        <file alias="Dialogs/ConfirmDialog.qml">../src/qmlui/qml/Dialogs/ConfirmDialog.qml</file>
+        <file alias="Login/CredentialsPage.qml">../src/qmlui/qml/Login/CredentialsPage.qml</file>
+        <file alias="Login/LoginFrame.qml">../src/qmlui/qml/Login/LoginFrame.qml</file>
+        <file alias="Login/MfaSetupPage.qml">../src/qmlui/qml/Login/MfaSetupPage.qml</file>
+        <file alias="Login/MfaVerifyPage.qml">../src/qmlui/qml/Login/MfaVerifyPage.qml</file>
+        <file alias="Login/PasswordPage.qml">../src/qmlui/qml/Login/PasswordPage.qml</file>
+        <file alias="Login/ProfilesPage.qml">../src/qmlui/qml/Login/ProfilesPage.qml</file>
+        <file alias="Login/ServerPage.qml">../src/qmlui/qml/Login/ServerPage.qml</file>
+        <file alias="Pages/AboutPage.qml">../src/qmlui/qml/Pages/AboutPage.qml</file>
+        <file alias="Pages/AppsPage.qml">../src/qmlui/qml/Pages/AppsPage.qml</file>
+        <file alias="Pages/DesktopsPage.qml">../src/qmlui/qml/Pages/DesktopsPage.qml</file>
+        <file alias="Pages/FavoritesPage.qml">../src/qmlui/qml/Pages/FavoritesPage.qml</file>
+        <file alias="Pages/HomePage.qml">../src/qmlui/qml/Pages/HomePage.qml</file>
+        <file alias="Pages/ProfilePage.qml">../src/qmlui/qml/Pages/ProfilePage.qml</file>
+        <file alias="Pages/ResourcePage.qml">../src/qmlui/qml/Pages/ResourcePage.qml</file>
+        <file alias="Pages/SettingsPage.qml">../src/qmlui/qml/Pages/SettingsPage.qml</file>
+        <file alias="Pages/TransportPage.qml">../src/qmlui/qml/Pages/TransportPage.qml</file>
+        <file alias="Screens/LoadingScreen.qml">../src/qmlui/qml/Screens/LoadingScreen.qml</file>
+        <file alias="Screens/LoginScreen.qml">../src/qmlui/qml/Screens/LoginScreen.qml</file>
+        <file alias="Screens/MainScreen.qml">../src/qmlui/qml/Screens/MainScreen.qml</file>
+        <file alias="Ui/AppButton.qml">../src/qmlui/qml/Ui/AppButton.qml</file>
+        <file alias="Ui/AppCheckBox.qml">../src/qmlui/qml/Ui/AppCheckBox.qml</file>
+        <file alias="Ui/AppField.qml">../src/qmlui/qml/Ui/AppField.qml</file>
+        <file alias="Ui/AppSlider.qml">../src/qmlui/qml/Ui/AppSlider.qml</file>
+        <file alias="Ui/AppToggle.qml">../src/qmlui/qml/Ui/AppToggle.qml</file>
+        <file alias="Ui/Avatar.qml">../src/qmlui/qml/Ui/Avatar.qml</file>
+        <file alias="Ui/Brand.qml">../src/qmlui/qml/Ui/Brand.qml</file>
+        <file alias="Ui/Card.qml">../src/qmlui/qml/Ui/Card.qml</file>
+        <file alias="Ui/ChoiceChips.qml">../src/qmlui/qml/Ui/ChoiceChips.qml</file>
+        <file alias="Ui/CrispImage.qml">../src/qmlui/qml/Ui/CrispImage.qml</file>
+        <file alias="Ui/FormGrid.qml">../src/qmlui/qml/Ui/FormGrid.qml</file>
+        <file alias="Ui/Icon.qml">../src/qmlui/qml/Ui/Icon.qml</file>
+        <file alias="Ui/Icons.qml">../src/qmlui/qml/Ui/Icons.qml</file>
+        <file alias="Ui/KeyValueRow.qml">../src/qmlui/qml/Ui/KeyValueRow.qml</file>
+        <file alias="Ui/NavItem.qml">../src/qmlui/qml/Ui/NavItem.qml</file>
+        <file alias="Ui/Notice.qml">../src/qmlui/qml/Ui/Notice.qml</file>
+        <file alias="Ui/Notifications.qml">../src/qmlui/qml/Ui/Notifications.qml</file>
+        <file alias="Ui/PageScaffold.qml">../src/qmlui/qml/Ui/PageScaffold.qml</file>
+        <file alias="Ui/SectionHeading.qml">../src/qmlui/qml/Ui/SectionHeading.qml</file>
+        <file alias="Ui/SegmentedTabs.qml">../src/qmlui/qml/Ui/SegmentedTabs.qml</file>
+        <file alias="Ui/Sidebar.qml">../src/qmlui/qml/Ui/Sidebar.qml</file>
+        <file alias="Ui/Spinner.qml">../src/qmlui/qml/Ui/Spinner.qml</file>
+        <file alias="Ui/StatusPill.qml">../src/qmlui/qml/Ui/StatusPill.qml</file>
+        <file alias="Ui/Theme.qml">../src/qmlui/qml/Ui/Theme.qml</file>
+        <file alias="Ui/ToastHost.qml">../src/qmlui/qml/Ui/ToastHost.qml</file>
+        <file alias="Ui/qmldir">../src/qmlui/qml/Ui/qmldir</file>
+    </qresource>
+    <qresource prefix="/i18n">
+        <file alias="en_US.qm">../i18n/en_US.qm</file>
+        <file alias="ru_RU.qm">../i18n/ru_RU.qm</file>
+    </qresource>
+    <qresource prefix="/meta">
+        <file alias="VERSION">../VERSION</file>
+    </qresource>
+</RCC>

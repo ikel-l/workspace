@@ -1,0 +1,305 @@
+name: Build macOS PKG
+
+on:
+  push:
+    branches:
+      - 2.0.0
+  workflow_dispatch:
+
+env:
+  APP_NAME: Gorizont-VS-VDI
+  APP_BUNDLE: Gorizont-VS-VDI.app
+  APP_VERSION: "2.0.0"
+  PKG_IDENTIFIER: ru.gorizont.vdi
+  MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_INSTALL_CLEANUP: "1"
+  HOMEBREW_NO_ANALYTICS: "1"
+
+jobs:
+  build-pkg:
+    name: Build macOS 15+ PKG with SPICE
+    runs-on: macos-15
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Runner info
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          mkdir -p build/debug
+
+          sw_vers | tee build/debug/sw_vers.txt
+          uname -a | tee build/debug/uname.txt
+          arch | tee build/debug/arch.txt
+
+          which bash | tee build/debug/which-bash.txt
+          which pkgbuild | tee build/debug/which-pkgbuild.txt
+          which productbuild | tee build/debug/which-productbuild.txt
+          which codesign | tee build/debug/which-codesign.txt
+          which install_name_tool | tee build/debug/which-install-name-tool.txt
+          which otool | tee build/debug/which-otool.txt
+
+          git rev-parse HEAD | tee build/debug/git-head.txt
+          git status --short | tee build/debug/git-status.txt
+
+      - name: Install Homebrew dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          brew install \
+            python@3.11 \
+            krb5 \
+            gstreamer \
+            gst-plugins-base \
+            gst-plugins-good \
+            gst-plugins-bad \
+            gst-libav \
+            ccache \
+            glib \
+            pixman \
+            gdk-pixbuf \
+            librsvg \
+            shared-mime-info \
+            adwaita-icon-theme \
+            hicolor-icon-theme \
+            meson \
+            ninja \
+            opus \
+            jpeg-turbo \
+            openssl@3 \
+            libusb \
+            gettext \
+            cyrus-sasl \
+            pkg-config \
+            ffmpeg \
+            x264 \
+            x265 \
+            aom \
+            dav1d \
+            libvpx \
+            svt-av1 \
+            libogg \
+            libvorbis \
+            flac \
+            lame \
+            fdk-aac \
+            libass \
+            libpng \
+            webp \
+            jpeg-xl \
+            xz \
+            mpdecimal \
+            expat \
+            graphene
+
+          echo "/opt/homebrew/bin" >> "$GITHUB_PATH"
+          echo "/opt/homebrew/sbin" >> "$GITHUB_PATH"
+
+          mkdir -p build/debug
+
+          /opt/homebrew/bin/python3 --version
+
+          /opt/homebrew/bin/python3 -m pip install --break-system-packages pyparsing || \
+          /opt/homebrew/bin/python3 -m pip install --user pyparsing
+
+          /opt/homebrew/bin/python3 -c "import pyparsing; print('system pyparsing OK')"
+
+          brew list --versions | sort | tee build/debug/brew-versions.txt
+
+      - name: Prepare Python venv
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          mkdir -p build/debug
+
+          /opt/homebrew/bin/python3.11 -m venv venv
+          source venv/bin/activate
+
+          python -m pip install --upgrade pip setuptools wheel
+
+          pip install -r requirements.txt
+          pip install pyparsing krb5 "Nuitka==4.0.8" ordered-set zstandard imageio
+
+          python --version | tee build/debug/python-version.txt
+          pip --version | tee build/debug/pip-version.txt
+          pip freeze | sort | tee build/debug/pip-freeze.txt
+
+      - name: Clean Python caches
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          find . -type d -name "__pycache__" -prune -exec rm -rf {} +
+          find . -type f -name "*.pyc" -delete
+
+      - name: Debug transport files before build
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          mkdir -p build/debug
+
+          find src -type f | sort | grep -Ei "transport|executor|consts|tools" \
+            | tee build/debug/transport-files.txt || true
+
+          shasum -a 256 \
+            src/transport/executor.py \
+            src/transport/consts.py \
+            src/transport/tools.py \
+            2>/dev/null | tee build/debug/transport-hashes.txt || true
+
+          grep -R "PUBLIC_KEY\|BEGIN PUBLIC KEY\|BEGIN RSA PUBLIC KEY" -n src \
+            | tee build/debug/public-key-grep.txt || true
+
+      - name: Build SPICE stack
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          mkdir -p build/debug
+
+          source venv/bin/activate
+
+          rm -rf spice-full
+          unzip spice-full.zip
+
+          cp makefiles/Makefile spice-full/Makefile
+          cp makefiles/meson.build-gtk-tools spice-full/spice-gtk/tools/meson.build
+          cp makefiles/spicy.c spice-full/spice-gtk/tools/spicy.c
+
+          cd spice-full
+
+          export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+          export PKG_CONFIG="/opt/homebrew/bin/pkg-config"
+          export PKG_CONFIG_PATH="/opt/homebrew/opt/cyrus-sasl/lib/pkgconfig:/opt/homebrew/lib/pkgconfig:/opt/homebrew/share/pkgconfig:${PKG_CONFIG_PATH:-}"
+          export CPPFLAGS="-I/opt/homebrew/include"
+          export LDFLAGS="-L/opt/homebrew/lib"
+          export MACOSX_DEPLOYMENT_TARGET="14.0"
+          export PYTHON="/opt/homebrew/bin/python3"
+          export PYTHONPATH="$HOME/Library/Python/3.11/lib/python/site-packages:${PYTHONPATH:-}"
+
+          meson --version
+          ninja --version
+          pkg-config --modversion libsasl2
+          pkg-config --libs libsasl2
+
+          /opt/homebrew/bin/python3 -c "import pyparsing; print('pyparsing OK for meson')"
+
+          mkdir -p build/spice/usr/share/locale/ru/LC_MESSAGES
+
+          make
+
+          cd ..
+
+          mkdir -p build/debug
+
+          echo "== SPICE build output =="
+          find spice-full/build/spice -maxdepth 8 -type f | sort | tee build/debug/spice-build-files.txt
+
+          echo "== SPICE locale output =="
+          find spice-full/build/spice -path "*/share/locale/*" -type f | sort | tee build/debug/spice-locale-files.txt || true
+
+          test -x spice-full/build/spice/opt/homebrew/bin/gorizont-spicy
+
+      - name: Build client app
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          mkdir -p build/debug
+
+          source venv/bin/activate
+
+          export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+          export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:/opt/homebrew/share/pkgconfig:${PKG_CONFIG_PATH:-}"
+          export MACOSX_DEPLOYMENT_TARGET="14.0"
+
+          ./rebuild.sh
+
+          rm -rf dist-mac
+          mkdir -p dist-mac
+
+          # The spec uses the repository-relative venv/bin/python path.
+          python tools/build_client.py
+          test -d "dist-mac/Gorizont-VS-VDI.app"
+          test -x "dist-mac/Gorizont-VS-VDI.app/Contents/MacOS/Gorizont-VS-VDI"
+
+          mkdir -p build/debug
+
+          echo "== DIST APP FILES =="
+          find dist-mac/Gorizont-VS-VDI.app -maxdepth 5 -type f | sort | tee build/debug/dist-app-files.txt
+
+          echo "== DIST MAIN BINARY =="
+          file dist-mac/Gorizont-VS-VDI.app/Contents/MacOS/Gorizont-VS-VDI \
+            | tee build/debug/dist-main-binary-file.txt
+
+      - name: Build PKG with SPICE
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          chmod +x ci/macos/build_pkg_with_spicy.sh
+          chmod +x ci/macos/bundle_dylibs_spicy.sh
+          chmod +x ci/macos/spicy-scripts/postinstall
+
+          ci/macos/build_pkg_with_spicy.sh
+
+          mkdir -p build/debug
+
+      - name: Verify PKG
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          mkdir -p build/debug
+
+          ls -lh build/*.pkg | tee build/debug/pkg-list.txt
+
+          pkgutil --payload-files build/component.pkg | tee build/debug/component-payload-files.txt
+
+          rm -rf /tmp/pkg-expand
+
+          PKG_FILE="$(find build -maxdepth 1 -type f \( \
+            -name 'Gorizont-VS-VDI-Client-Setup-*.pkg' -o \
+            -name 'Gorizont-VS-VDI-With-SPICE-*.pkg' \
+          \) | sort | head -n 1)"
+
+          if [ -z "${PKG_FILE:-}" ]; then
+            echo "ERROR: final PKG not found"
+            find build -maxdepth 1 -type f -print || true
+            exit 1
+          fi
+
+          echo "$PKG_FILE" | tee build/debug/final-pkg-path.txt
+
+          pkgutil --expand-full "$PKG_FILE" /tmp/pkg-expand
+
+          find /tmp/pkg-expand -maxdepth 8 -type f | sort | tee build/debug/expanded-pkg-files.txt
+
+      - name: Upload PKG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gorizont-VS-VDI-Client-Setup-arm64
+          path: build/Gorizont-VS-VDI-Client-Setup-*.pkg
+
+      - name: Upload component package for debug
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-component-pkg-debug
+          path: build/component.pkg
+
+      - name: Upload debug info
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-build-debug
+          path: build/debug/

@@ -1,0 +1,63 @@
+#
+# Gorizont SPICE-GTK tools
+#
+
+windows = import('windows')
+
+spice_cmdline_sources = [
+  'spice-cmdline.c',
+  'spice-cmdline.h',
+]
+
+#
+# gorizont-spicy-stats
+#
+executable(
+  'gorizont-spicy-stats',
+  sources : spice_cmdline_sources + [
+    'spicy-stats.c',
+  ],
+  c_args : '-Wno-deprecated-declarations',
+  install : true,
+  dependencies : spice_client_glib_dep,
+)
+
+#
+# gorizont-spicy-screenshot
+#
+executable(
+  'gorizont-spicy-screenshot',
+  sources : spice_cmdline_sources + [
+    'spicy-screenshot.c',
+  ],
+  c_args : '-Wno-deprecated-declarations',
+  install : true,
+  dependencies : spice_client_glib_dep,
+)
+
+#
+# gorizont-spicy
+#
+if spice_gtk_has_gtk
+  spicy_sources = [
+    'spicy.c',
+    'spicy-connect.c',
+    'spicy-connect.h',
+  ]
+
+  if host_machine.system() == 'windows'
+    message('Building gorizont-spicy.exe with embedded icon resource')
+
+    spicy_icon = windows.compile_resources('spicy.rc')
+    spicy_sources += spicy_icon
+  endif
+
+  executable(
+    'gorizont-spicy',
+    sources : spicy_sources + spice_cmdline_sources,
+    c_args : '-Wno-deprecated-declarations',
+    gui_app : false,
+    install : true,
+    dependencies : spice_client_gtk_dep,
+  )
+endif
