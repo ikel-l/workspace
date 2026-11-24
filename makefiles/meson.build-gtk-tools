@@ -43,7 +43,48 @@ if spice_gtk_has_gtk
     'spicy.c',
     'spicy-connect.c',
     'spicy-connect.h',
+    'spicy-theme.c',
+    'spicy-theme.h',
   ]
+
+  spicy_c_args = ['-Wno-deprecated-declarations']
+  spicy_deps = [spice_client_gtk_dep]
+
+  spicy_fs = import('fs')
+  spicy_font_files = [
+    '../data/fonts/Montserrat-Medium.ttf',
+    '../data/fonts/Montserrat-SemiBold.ttf',
+    '../data/fonts/OFL.txt',
+  ]
+  spicy_have_fonts = true
+  foreach f : spicy_font_files
+    if not spicy_fs.is_file(f)
+      spicy_have_fonts = false
+    endif
+  endforeach
+  if spicy_have_fonts
+    spicy_fonts_dir = get_option('datadir') / 'gorizont-spicy' / 'fonts'
+    install_data(spicy_font_files, install_dir : spicy_fonts_dir)
+    spicy_c_args += '-DSPICY_FONTS_DIR="@0@"'.format(get_option('prefix') / spicy_fonts_dir)
+  else
+    warning('spice-gtk/data/fonts/Montserrat-*.ttf not found: the panel will use the system font')
+  endif
+
+  if host_machine.system() == 'darwin'
+    spicy_coretext = dependency('appleframeworks', modules : ['CoreText', 'CoreFoundation'],
+                                required : false)
+    if spicy_coretext.found()
+      spicy_deps += spicy_coretext
+      spicy_c_args += '-DSPICY_HAVE_CORETEXT'
+    endif
+  elif host_machine.system() != 'windows'
+    spicy_fontconfig = dependency('fontconfig', required : false)
+    if spicy_fontconfig.found()
+      spicy_deps += spicy_fontconfig
+      spicy_c_args += '-DSPICY_HAVE_FONTCONFIG'
+    endif
+  endif
+
 
   if host_machine.system() == 'windows'
     message('Building gorizont-spicy.exe with embedded icon resource')
@@ -55,9 +96,9 @@ if spice_gtk_has_gtk
   executable(
     'gorizont-spicy',
     sources : spicy_sources + spice_cmdline_sources,
-    c_args : '-Wno-deprecated-declarations',
+    c_args : spicy_c_args,
     gui_app : false,
     install : true,
-    dependencies : spice_client_gtk_dep,
+    dependencies : spicy_deps,
   )
 endif

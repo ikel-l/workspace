@@ -174,6 +174,10 @@ jobs:
           cp makefiles/Makefile spice-full/Makefile
           cp makefiles/meson.build-gtk-tools spice-full/spice-gtk/tools/meson.build
           cp makefiles/spicy.c spice-full/spice-gtk/tools/spicy.c
+          cp makefiles/spicy-theme.c makefiles/spicy-theme.h spice-full/spice-gtk/tools/
+          cp makefiles/meson.build-gtk-src spice-full/spice-gtk/src/meson.build
+          mkdir -p spice-full/spice-gtk/data/fonts
+          cp makefiles/fonts/* spice-full/spice-gtk/data/fonts/
 
           cd spice-full
 
