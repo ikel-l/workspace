@@ -45,7 +45,6 @@
 #include "spice-cmdline.h"
 #include "spice-option.h"
 #include "usb-device-widget.h"
-#include "spicy-theme.h"
 
 #ifndef LOCALEDIR
 #define LOCALEDIR "/usr/share/locale"
@@ -928,7 +927,30 @@ static void fs_overlay_btn_disconnect_clicked(GtkButton *btn G_GNUC_UNUSED, gpoi
 
 static void fs_overlay_css_init(void)
 {
-    spicy_theme_init();
+    static gboolean inited = FALSE;
+    if (inited)
+        return;
+    inited = TRUE;
+
+    GtkCssProvider *provider = gtk_css_provider_new();
+    /* User explicitly requested red coloring for these buttons */
+    const gchar *css =
+        ".fs-overlay-danger {"
+        "  background-image: none;"
+        "  background-color: #cc0000;"
+        "  color: #ffffff;"
+        "}"
+        ".fs-overlay-danger:hover {"
+        "  background-color: #a00000;"
+        "}"
+        ".fs-overlay-hotzone {"
+        "  background-color: rgba(255,255,255,0.10);"
+        "}";
+    gtk_css_provider_load_from_data(provider, css, -1, NULL);
+    gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                              GTK_STYLE_PROVIDER(provider),
+                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    g_object_unref(provider);
 }
 
 static gchar *strip_mnemonic_underscore(const gchar *label)
@@ -949,43 +971,13 @@ static gchar *strip_mnemonic_underscore(const gchar *label)
 
 typedef struct {
     GtkWidget *menu; /* GtkMenu */
-    GtkWidget *button;
 } FsOverlayMenuBtn;
-
-static void fs_overlay_menu_deactivate(GtkMenuShell *menu G_GNUC_UNUSED, gpointer user_data)
-{
-    FsOverlayMenuBtn *d = user_data;
-    if (!d || !d->menu)
-        return;
-
-    spicy_theme_style_menu(d->menu, FALSE);
-    if (d->button)
-        gtk_style_context_remove_class(gtk_widget_get_style_context(d->button), "gvs-open");
-}
-
-static void fs_overlay_menu_button_free(gpointer data, GClosure *closure G_GNUC_UNUSED)
-{
-    FsOverlayMenuBtn *d = data;
-    if (!d)
-        return;
-
-    if (d->menu) {
-        g_signal_handlers_disconnect_by_data(d->menu, d);
-        g_object_remove_weak_pointer(G_OBJECT(d->menu), (gpointer *)&d->menu);
-    }
-    if (d->button)
-        g_object_remove_weak_pointer(G_OBJECT(d->button), (gpointer *)&d->button);
-    g_free(d);
-}
 
 static void fs_overlay_menu_button_clicked(GtkButton *btn, gpointer user_data)
 {
     FsOverlayMenuBtn *d = user_data;
     if (!d || !d->menu || !GTK_IS_MENU(d->menu))
         return;
-
-    spicy_theme_style_menu(d->menu, TRUE);
-    gtk_style_context_add_class(gtk_widget_get_style_context(GTK_WIDGET(btn)), "gvs-open");
 
 #if GTK_CHECK_VERSION(3, 22, 0)
     gtk_menu_popup_at_widget(GTK_MENU(d->menu), GTK_WIDGET(btn),
@@ -998,8 +990,7 @@ static void fs_overlay_menu_button_clicked(GtkButton *btn, gpointer user_data)
 static GtkWidget *fs_overlay_menu_button_new(SpiceWindow *win,
                                              const gchar *ui_path,
                                              const gchar *action_name,
-                                             const gchar *fallback_label,
-                                             SpicyIcon icon)
+                                             const gchar *fallback_label)
 {
     GtkWidget *mi;
     GtkWidget *submenu;
@@ -1020,20 +1011,15 @@ static GtkWidget *fs_overlay_menu_button_new(SpiceWindow *win,
             label = strip_mnemonic_underscore(gtk_action_get_label(act));
     }
 
-    GtkWidget *btn = spicy_theme_button_new(icon,
-                                            label ? label : (fallback_label ? fallback_label : action_name),
-                                            FALSE, TRUE);
+    GtkWidget *btn = gtk_button_new_with_label(label ? label : (fallback_label ? fallback_label : action_name));
+    gtk_widget_set_can_focus(btn, FALSE);
 
     FsOverlayMenuBtn *d = g_new0(FsOverlayMenuBtn, 1);
     d->menu = submenu;
-    d->button = btn;
-    g_object_add_weak_pointer(G_OBJECT(d->menu), (gpointer *)&d->menu);
-    g_object_add_weak_pointer(G_OBJECT(d->button), (gpointer *)&d->button);
 
-    g_signal_connect(submenu, "deactivate", G_CALLBACK(fs_overlay_menu_deactivate), d);
     g_signal_connect_data(btn, "clicked",
                           G_CALLBACK(fs_overlay_menu_button_clicked),
-                          d, fs_overlay_menu_button_free, 0);
+                          d, (GClosureNotify)g_free, 0);
 
     if (label)
         g_free(label);
@@ -1056,37 +1042,34 @@ static void fs_overlay_build(SpiceWindow *win)
     gtk_revealer_set_transition_duration(GTK_REVEALER(win->top_revealer), 150);
     gtk_revealer_set_reveal_child(GTK_REVEALER(win->top_revealer), FALSE);
 
+    /* Visible bar */
     win->top_bar = gtk_event_box_new();
-    gtk_event_box_set_visible_window(GTK_EVENT_BOX(win->top_bar), FALSE);
+    gtk_event_box_set_visible_window(GTK_EVENT_BOX(win->top_bar), TRUE);
 
     /* One centered row: [Disconnect] [Exit Fullscreen] | [Options] [Input] */
-    bar_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-    gtk_style_context_add_class(gtk_widget_get_style_context(bar_box), "gvs-panel");
+    bar_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    gtk_container_set_border_width(GTK_CONTAINER(bar_box), 6);
     gtk_widget_set_halign(bar_box, GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(bar_box, GTK_ALIGN_START);
+    gtk_widget_set_valign(bar_box, GTK_ALIGN_CENTER);
     gtk_widget_set_hexpand(bar_box, FALSE);
-    /* Room for the shadow of the card */
-    gtk_widget_set_margin_start(bar_box, 18);
-    gtk_widget_set_margin_end(bar_box, 18);
-    gtk_widget_set_margin_bottom(bar_box, 18);
 
-    btn = spicy_theme_button_new(SPICY_ICON_POWER, _("Disconnect"), TRUE, FALSE);
+    btn = gtk_button_new_with_label(_("Disconnect"));
     g_signal_connect(btn, "clicked", G_CALLBACK(fs_overlay_btn_disconnect_clicked), win);
+    gtk_style_context_add_class(gtk_widget_get_style_context(btn), "fs-overlay-danger");
     gtk_box_pack_start(GTK_BOX(bar_box), btn, FALSE, FALSE, 0);
 
-    btn = spicy_theme_button_new(SPICY_ICON_EXIT_FULLSCREEN, _("Exit Fullscreen"), TRUE, FALSE);
+    btn = gtk_button_new_with_label(_("Exit Fullscreen"));
     g_signal_connect(btn, "clicked", G_CALLBACK(fs_overlay_btn_exit_fullscreen_clicked), win);
+    gtk_style_context_add_class(gtk_widget_get_style_context(btn), "fs-overlay-danger");
     gtk_box_pack_start(GTK_BOX(bar_box), btn, FALSE, FALSE, 0);
 
-    gtk_box_pack_start(GTK_BOX(bar_box), spicy_theme_separator_new(), FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(bar_box), gtk_separator_new(GTK_ORIENTATION_VERTICAL), FALSE, FALSE, 6);
 
-    mb = fs_overlay_menu_button_new(win, "/MainMenu/OptionMenu", "OptionMenu", _("Options"),
-                                    SPICY_ICON_OPTIONS);
+    mb = fs_overlay_menu_button_new(win, "/MainMenu/OptionMenu", "OptionMenu", _("Options"));
     if (mb)
         gtk_box_pack_start(GTK_BOX(bar_box), mb, FALSE, FALSE, 0);
 
-    mb = fs_overlay_menu_button_new(win, "/MainMenu/InputMenu", "InputMenu", _("Input"),
-                                    SPICY_ICON_INPUT);
+    mb = fs_overlay_menu_button_new(win, "/MainMenu/InputMenu", "InputMenu", _("Input"));
     if (mb)
         gtk_box_pack_start(GTK_BOX(bar_box), mb, FALSE, FALSE, 0);
 
@@ -1097,9 +1080,10 @@ static void fs_overlay_build(SpiceWindow *win)
     g_signal_connect(win->top_bar, "enter-notify-event", G_CALLBACK(fs_overlay_bar_enter_cb), win);
     g_signal_connect(win->top_bar, "leave-notify-event", G_CALLBACK(fs_overlay_bar_leave_cb), win);
 
+    /* Hotzone (semi-transparent): only this area triggers showing the bar */
     win->hotzone = gtk_event_box_new();
-    gtk_event_box_set_visible_window(GTK_EVENT_BOX(win->hotzone), FALSE);
-    gtk_container_add(GTK_CONTAINER(win->hotzone), spicy_theme_grip_new());
+    gtk_event_box_set_visible_window(GTK_EVENT_BOX(win->hotzone), TRUE);
+    gtk_style_context_add_class(gtk_widget_get_style_context(win->hotzone), "fs-overlay-hotzone");
     gtk_widget_set_halign(win->hotzone, GTK_ALIGN_CENTER);
     gtk_widget_set_valign(win->hotzone, GTK_ALIGN_START);
     win->hotzone_width = 420;
@@ -3518,8 +3502,6 @@ int main(int argc, char *argv[])
     /* i18n */
     init_i18n();
     g_log_set_writer_func(spicy_log_writer, NULL, NULL);
-
-    spicy_theme_load_fonts();
 
     /* parse opts */
     gtk_init(&argc, &argv);
